@@ -76,14 +76,14 @@ unordered_map<int, int> dijkstra(
     const vector<vector<pair<int, int>>> &graph,
     int source,
     int target,
-    unordered_map<int, int> &parent // parent map passed by reference
+    unordered_map<int, int> &parent 
 ) {
     unordered_map<int, int> distances;
     priority_queue<pair<int, int>, vector<pair<int, int>>, greater<pair<int, int>>> pq;
 
     distances[source] = 0;
     pq.push({0, source});
-    parent[source] = -1;  // source has no parent
+    parent[source] = -1;  
 
     while (!pq.empty()) {
         int dist = pq.top().first;
@@ -102,7 +102,7 @@ unordered_map<int, int> dijkstra(
             int nextNode = neighbor.first;
             int edgeWeight = neighbor.second;
 
-            // Initialize distances[nextNode] if it hasn't been initialized yet
+            
             if (distances.find(nextNode) == distances.end()) {
                 distances[nextNode] = INT_MAX;
             }
@@ -110,7 +110,7 @@ unordered_map<int, int> dijkstra(
             if (dist + edgeWeight < distances[nextNode]) {
                 distances[nextNode] = dist + edgeWeight;
                 pq.push({distances[nextNode], nextNode});
-                parent[nextNode] = curNode;  // save the parent node
+                parent[nextNode] = curNode;  
             }
         }
     }
@@ -134,7 +134,7 @@ if (size <= 0) {
     return;
 }
 
-// Size is incremented by 1 to accommodate for 1-based indexing of vertices
+
 vector<vector<pair<int, int>>> graph(size + 1);
 
 int vertex, neighbor, weight;
@@ -175,7 +175,7 @@ while (ifs >> vertex) {
         return;
     }
 
-    int source = 1;  // Assume source is 0, change as needed
+    int source = 1;  
     unordered_map<int, int> parent;
 
     auto start = std::chrono::high_resolution_clock::now();  // Start the timer
@@ -229,7 +229,7 @@ void startBFS(string fileName, int type){
         }
     }
 
-    int source = 1;  // For example purposes, starting from vertex 1
+    int source = 1;  
     int target;
     cout << "what is the target node?\n ";
     cin >> target;
@@ -272,7 +272,7 @@ void startBFS(string fileName, int type){
    
     cout << "Time taken by BFS: " << duration.count() << " microseconds" << endl;
 
-    // Reconstruct the path
+    
     stack<int> path;
     for (int v = target; v != -1; v = parent[v]) {
         path.push(v);
