@@ -93,7 +93,7 @@ void startD(string fileName, int type){
         typeSearch(type);
     }
     createTime = (double)(stop - start) / CLOCKS_PER_SEC;
-    cout << "Binary Search tree created in " << createTime << " seconds\n";
+    cout << "Dijkstra's Algorith Created in " << createTime << " seconds\n";
     bstTree.inorder(ofs);
     ofs.close();
     ifs.close();
