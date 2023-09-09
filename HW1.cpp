@@ -10,6 +10,8 @@
 #include <unordered_map>
 #include <algorithm>
 #include <climits>
+#include <stack>
+#include <chrono>
 using namespace std;
 
 void typeSearch(int type);
@@ -175,7 +177,14 @@ while (ifs >> vertex) {
 
     int source = 1;  // Assume source is 0, change as needed
     unordered_map<int, int> parent;
+
+    auto start = std::chrono::high_resolution_clock::now();  // Start the timer
+    
     auto distances = dijkstra(graph, source, target, parent);
+
+     auto stop = std::chrono::high_resolution_clock::now();  // Stop the timer
+    auto duration = std::chrono::duration_cast<std::chrono::microseconds>(stop - start);
+    cout << "Time taken by Dijkstra: " << duration.count() << " microseconds" << endl;
 
     if (distances.find(target) != distances.end()) {
         cout << "Shortest distance to target is: " << distances[target] << endl;
@@ -198,7 +207,83 @@ while (ifs >> vertex) {
 
 
 void startBFS(string fileName, int type){
-    exit(1);
+    ifstream ifs(fileName);
+    if (!ifs.is_open()) {
+        cout << "Unable to open file\n";
+        return;
+    }
+
+    int size;
+    ifs >> size;
+    if (size <= 0) {
+        cout << "Invalid graph size\n";
+        return;
+    }
+
+    vector<vector<pair<int, int>>> graph(size + 1);
+    int vertex, neighbor, weight;
+    while (ifs >> vertex) {
+        while (ifs.peek() != '\n' && !ifs.eof()) {
+            ifs >> neighbor >> weight;
+            graph[vertex].push_back({neighbor, weight});
+        }
+    }
+
+    int source = 1;  // For example purposes, starting from vertex 1
+    int target;
+    cout << "what is the target node?\n ";
+    cin >> target;
+
+    unordered_map<int, bool> visited;
+    unordered_map<int, int> parent;
+    unordered_map<int, int> distance;
+    queue<int> q;
+
+    auto start = std::chrono::high_resolution_clock::now();
+    q.push(source);
+    visited[source] = true;
+    parent[source] = -1;
+
+    while (!q.empty()) {
+        int current = q.front();
+        q.pop();
+
+        if (current == target) {
+            break;
+        }
+
+        for (const auto &neighbor : graph[current]) {
+            if (!visited[neighbor.first]) {
+                q.push(neighbor.first);
+                visited[neighbor.first] = true;
+                parent[neighbor.first] = current;
+                
+            }
+        }
+    }
+    auto stop = std::chrono::high_resolution_clock::now();  // Stop the timer
+    auto duration = std::chrono::duration_cast<std::chrono::microseconds>(stop - start);
+
+    if (!visited[target]) {
+        cout << "No path from source to target.\n";
+        return;
+    }
+
+   
+    cout << "Time taken by BFS: " << duration.count() << " microseconds" << endl;
+
+    // Reconstruct the path
+    stack<int> path;
+    for (int v = target; v != -1; v = parent[v]) {
+        path.push(v);
+    }
+
+    cout << "Path: ";
+    while (!path.empty()) {
+        cout << path.top() << ' ';
+        path.pop();
+    }
+    cout << endl;
 }
 
 void startDFS(string fileName, int type){
@@ -207,19 +292,3 @@ void startDFS(string fileName, int type){
 
 
 
-
-
-
-
-
-
-
-// if (distances.find(neighbor.vertex) == distances.end()) {
-//                 distances[neighbor.vertex] = numeric_limits<int>::max();
-//             }
-
-//             // Check if the current vertex exists in the graph
-//         if (graph.find(current.vertex) == graph.end()) {
-//             continue; // Skip if not found
-//         }
-        
