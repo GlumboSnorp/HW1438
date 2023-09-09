@@ -49,7 +49,7 @@ void typeSearch(int type){
         }else if(type == 2){
             startBFS(input,type);
         }else if(type == 3){
-            startDFS(input)
+            startDFS(input,type);
         }else{
             cout << "This Error should have been caught earlier, sorry for the trouble\n";
             main();
@@ -64,41 +64,62 @@ void typeSearch(int type){
 }
 
 void startD(string fileName, int type){
-    Di dij;
-
+    //Di dij;
+    char car[] = "";
+    string sizeI;
+    int size = 0;
+    int siz2 = 0;
+    vector<string> arr;
+    string line;
     string input;
     string quest;
+    string rand;
+    int count = 0;
     clock_t start, stop;  
     double createTime;
     ofstream ofs("dijkstra.txt");
+
     cout << "What is the target node?\n";
     cin >> input;
-    cout << "Is " << input << " the correct target, yes or no?\n"
+    cout << "Is " << input << " the correct target, yes or no?(lowercase)\n";
     cin >> quest;
 
-    if(quest.tolower() == no){
+    if(quest == "no"){
         startD(fileName, type);
-    }else if(quest.tolower() == yes){
-    ifstream ifs;
-    ifs.open(fileName);
+    }else if(quest == "yes"){
+        ifstream ifs;
+        ifs.open(fileName);
     if (ifs.is_open()) {
-        getline(ifs, )
-        while(getline(ifs, word)){
-            bstTree.insert(word);
+        getline(ifs,sizeI);
+        size = stoi(sizeI);
+        cout << size << endl;
+        while(getline(ifs, line)){
+           cout << line << endl;
         }
+        
     } else {
         cout << "Unable to open File\n";
         ofs.close();
         ifs.close();
         typeSearch(type);
     }
-    createTime = (double)(stop - start) / CLOCKS_PER_SEC;
+    cout <<"\n\n start of output \n";
+    cout << line << endl;
+    //createTime = (double)(stop - start) / CLOCKS_PER_SEC;
     cout << "Dijkstra's Algorith Created in " << createTime << " seconds\n";
-    bstTree.inorder(ofs);
+    //dij.inorder(ofs);
     ofs.close();
     ifs.close();
     }else{
         cout << "Invalid input\n";
         startD(fileName, type);
     }
+}
+
+void startBFS(string fileName, int type){
+    exit(1);
+}
+
+void startDFS(string fileName, int type){
+    exit(1);
 }
