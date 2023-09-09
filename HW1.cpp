@@ -236,7 +236,7 @@ void startBFS(string fileName, int type){
 
     unordered_map<int, bool> visited;
     unordered_map<int, int> parent;
-    unordered_map<int, int> distance;
+    //unordered_map<int, int> distance;
     queue<int> q;
 
     auto start = std::chrono::high_resolution_clock::now();
