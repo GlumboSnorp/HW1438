@@ -156,7 +156,7 @@ void depthFirstSearch(const Graph& graph, std::unordered_map<int, int>& distance
 
 int main() {
     int target = 0;
-    Graph graph = loadGraph("test.txt");  // Example for 10-node graph
+    Graph graph = loadGraph("graphPosMes.txt");  // Example for 10-node graph
     std::cout << "What is target: ";
     std::cin >> target;
 

@@ -8,8 +8,8 @@
       "args": [],
       "stopAtEntry": false,
       "externalConsole": true,
-      "cwd": "c:/Users/Anthony/Desktop/HW1438",
-      "program": "c:/Users/Anthony/Desktop/HW1438/build/Debug/outDebug",
+      "cwd": "c:/Users/Ray/CS438/HW1/HW1438",
+      "program": "c:/Users/Ray/CS438/HW1/HW1438/build/Debug/outDebug",
       "MIMode": "gdb",
       "miDebuggerPath": "gdb",
       "setupCommands": [

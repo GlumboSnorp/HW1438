@@ -6,12 +6,19 @@
 #include <ctime>
 #include <vector>
 #include <iomanip>
+#include <queue>
+#include <unordered_map>
+#include <algorithm>
+#include <climits>
 using namespace std;
 
 void typeSearch(int type);
 void startD(string fileName, int type);
 void startBFS(string fileName, int type);
 void startDFS(string fileName, int type);
+unordered_map<int, int> dijkstra(const vector<vector<pair<int, int>>> &graph, int source, int target, unordered_map<int, int> &parent);
+
+
 
 int main(){
     string input = "";
@@ -63,57 +70,132 @@ void typeSearch(int type){
     }
 }
 
-void startD(string fileName, int type){
-    char car[] = "";
-    string sizeI;
-    int size = 0;
-    int siz2 = 0;
-    vector<string> arr;
-    string line;
-    string input;
-    string quest;
-    string rand;
-    int count = 0;
-    clock_t start, stop;  
-    double createTime;
-    ofstream ofs("dijkstra.txt");
+unordered_map<int, int> dijkstra(
+    const vector<vector<pair<int, int>>> &graph,
+    int source,
+    int target,
+    unordered_map<int, int> &parent // parent map passed by reference
+) {
+    unordered_map<int, int> distances;
+    priority_queue<pair<int, int>, vector<pair<int, int>>, greater<pair<int, int>>> pq;
 
-    cout << "What is the target node?\n";
-    cin >> input;
-    cout << "Is " << input << " the correct target, yes or no?(lowercase)\n";
-    cin >> quest;
+    distances[source] = 0;
+    pq.push({0, source});
+    parent[source] = -1;  // source has no parent
 
-    if(quest == "no"){
-        startD(fileName, type);
-    }else if(quest == "yes"){
-        ifstream ifs;
-        ifs.open(fileName);
-    if (ifs.is_open()) {
-        getline(ifs,sizeI);
-        size = stoi(sizeI);
-        cout << size << endl;
-        while(getline(ifs, line)){
-           cout << line << endl;
+    while (!pq.empty()) {
+        int dist = pq.top().first;
+        int curNode = pq.top().second;
+        pq.pop();
+
+        if (distances.find(curNode) != distances.end() && dist > distances[curNode]) {
+            continue;
         }
-        
-    } else {
-        cout << "Unable to open File\n";
-        ofs.close();
-        ifs.close();
-        typeSearch(type);
+
+        if (curNode == target) {
+            break;
+        }
+
+        for (const auto &neighbor : graph[curNode]) {
+            int nextNode = neighbor.first;
+            int edgeWeight = neighbor.second;
+
+            // Initialize distances[nextNode] if it hasn't been initialized yet
+            if (distances.find(nextNode) == distances.end()) {
+                distances[nextNode] = INT_MAX;
+            }
+
+            if (dist + edgeWeight < distances[nextNode]) {
+                distances[nextNode] = dist + edgeWeight;
+                pq.push({distances[nextNode], nextNode});
+                parent[nextNode] = curNode;  // save the parent node
+            }
+        }
     }
-    cout <<"\n\n start of output \n";
-    cout << line << endl;
-    //createTime = (double)(stop - start) / CLOCKS_PER_SEC;
-    cout << "Dijkstra's Algorith Created in " << createTime << " seconds\n";
-    //dij.inorder(ofs);
-    ofs.close();
-    ifs.close();
-    }else{
-        cout << "Invalid input\n";
-        startD(fileName, type);
+
+    return distances;
+}
+
+
+void startD(string fileName, int type){
+ifstream ifs(fileName);
+if (!ifs.is_open()) {
+    cout << "Unable to open file\n";
+    return;
+}
+
+int size;
+ifs >> size;
+
+if (size <= 0) {
+    cout << "Invalid graph size\n";
+    return;
+}
+
+// Size is incremented by 1 to accommodate for 1-based indexing of vertices
+vector<vector<pair<int, int>>> graph(size + 1);
+
+int vertex, neighbor, weight;
+while (ifs >> vertex) {
+    if (vertex <= 0 || vertex > size) {
+        cout << "Invalid vertex index\n";
+        return;
+    }
+
+    while (ifs.peek() != '\n' && !ifs.eof()) {
+        ifs >> neighbor >> weight;
+
+        if (neighbor <= 0 || neighbor > size) {
+            cout << "Invalid neighbor index\n";
+            return;
+        }
+
+        graph[vertex].push_back({neighbor, weight});
     }
 }
+
+    int target;
+    cout << "What is the target node?\n";
+    cin >> target;
+
+    string quest;
+    cout << "Is " << target << " the correct target, yes or no?(lowercase)\n";
+    cin >> quest;
+
+    if (quest == "no") {
+        startD(fileName, type);
+        return;
+    }
+
+    if (quest != "yes") {
+        cout << "Invalid input\n";
+        startD(fileName, type);
+        return;
+    }
+
+    int source = 1;  // Assume source is 0, change as needed
+    unordered_map<int, int> parent;
+    auto distances = dijkstra(graph, source, target, parent);
+
+    if (distances.find(target) != distances.end()) {
+        cout << "Shortest distance to target is: " << distances[target] << endl;
+
+        vector<int> path;
+        for (int v = target; v != -1; v = parent[v]) {
+            path.push_back(v);
+        }
+        reverse(path.begin(), path.end());
+
+        cout << "Path: ";
+        for (int v : path) {
+            cout << v << " ";
+        }
+        cout << endl;
+    } else {
+        cout << "No path from source to target" << endl;
+    }
+}
+
 
 void startBFS(string fileName, int type){
     exit(1);
@@ -132,11 +214,12 @@ void startDFS(string fileName, int type){
 
 
 
-if (distances.find(neighbor.vertex) == distances.end()) {
-                distances[neighbor.vertex] = numeric_limits<int>::max();
-            }
+// if (distances.find(neighbor.vertex) == distances.end()) {
+//                 distances[neighbor.vertex] = numeric_limits<int>::max();
+//             }
 
-            // Check if the current vertex exists in the graph
-        if (graph.find(current.vertex) == graph.end()) {
-            continue; // Skip if not found
-        }
+//             // Check if the current vertex exists in the graph
+//         if (graph.find(current.vertex) == graph.end()) {
+//             continue; // Skip if not found
+//         }
+        
