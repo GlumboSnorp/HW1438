@@ -64,7 +64,6 @@ void typeSearch(int type){
 }
 
 void startD(string fileName, int type){
-    //Di dij;
     char car[] = "";
     string sizeI;
     int size = 0;
@@ -123,3 +122,21 @@ void startBFS(string fileName, int type){
 void startDFS(string fileName, int type){
     exit(1);
 }
+
+
+
+
+
+
+
+
+
+
+if (distances.find(neighbor.vertex) == distances.end()) {
+                distances[neighbor.vertex] = numeric_limits<int>::max();
+            }
+
+            // Check if the current vertex exists in the graph
+        if (graph.find(current.vertex) == graph.end()) {
+            continue; // Skip if not found
+        }

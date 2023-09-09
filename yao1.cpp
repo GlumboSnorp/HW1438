@@ -5,7 +5,7 @@
 #include <unordered_map>
 #include <climits>
 #include <fstream>
-
+#include <limits>
 using namespace std;
 
 struct Node {
@@ -54,17 +54,19 @@ void uniformCostBestFirstSearch(const Graph& graph) {
         Node current = pq.top();
         pq.pop();
 
+        //this loop is the problem, i believe this was done through chapgpt as it has issues
         for (const Node& neighbor : graph.at(current.vertex)) {
             int newDist = distances[current.vertex] + neighbor.weight;
             if (newDist < distances[neighbor.vertex]) {
                 distances[neighbor.vertex] = newDist;
                 pq.push(Node(neighbor.vertex, newDist));
             }
-        }
-    }
+
 
     for (const auto& pair : distances) {
         cout << "Distance to " << pair.first << " = " << pair.second << endl;
+    }
+}
     }
 }
 
@@ -131,7 +133,7 @@ void depthFirstSearch(const Graph& graph, unordered_map<int, int>& distances) {
 }
 
 int main() {
-    Graph graph = loadGraph("test.txt");  // Example for 10-node graph
+    Graph graph = loadGraph("10n.txt");  // Example for 10-node graph
     cout << "Dijkstra's Algorithm Results:" << endl;
     uniformCostBestFirstSearch(graph);
 
