@@ -182,7 +182,7 @@ while (ifs >> vertex) {
     
     auto distances = dijkstra(graph, source, target, parent);
 
-     auto stop = std::chrono::high_resolution_clock::now();  // Stop the timer
+    auto stop = std::chrono::high_resolution_clock::now();  // Stop the timer
     auto duration = std::chrono::duration_cast<std::chrono::microseconds>(stop - start);
     cout << "Time taken by Dijkstra: " << duration.count() << " microseconds" << endl;
 
@@ -200,8 +200,10 @@ while (ifs >> vertex) {
             cout << v << " ";
         }
         cout << endl;
+        main();
     } else {
         cout << "No path from source to target" << endl;
+        main();
     }
 }
 
@@ -284,10 +286,89 @@ void startBFS(string fileName, int type){
         path.pop();
     }
     cout << endl;
+    main();
 }
 
 void startDFS(string fileName, int type){
-    exit(1);
+        ifstream ifs(fileName);
+    if (!ifs.is_open()) {
+        cout << "Unable to open file\n";
+        return;
+    }
+
+    int size;
+    ifs >> size;
+    if (size <= 0) {
+        cout << "Invalid graph size\n";
+        return;
+    }
+
+    vector<vector<pair<int, int>>> graph(size + 1);
+    int vertex, neighbor, weight;
+    while (ifs >> vertex) {
+        while (ifs.peek() != '\n' && !ifs.eof()) {
+            ifs >> neighbor >> weight;
+            graph[vertex].push_back({neighbor, weight});
+        }
+    }
+
+    int source = 1;  
+    int target;
+    cout << "what is the target node?\n ";
+    cin >> target;
+
+    unordered_map<int, bool> visited;
+    unordered_map<int, int> parent;
+
+    stack<int> q;
+
+    auto start = std::chrono::high_resolution_clock::now();
+    q.push(source);
+    visited[source] = true;
+    parent[source] = -1;
+
+    while (!q.empty()) {
+        int current = q.top();
+        q.pop();
+
+        if (current == target) {
+            break;
+        }
+
+        for (auto neighbor_it = graph[current].rbegin(); neighbor_it != graph[current].rend(); ++neighbor_it) {
+            int neighbor = neighbor_it->first;
+            if (!visited[neighbor]) {
+                q.push(neighbor);
+                visited[neighbor] = true;
+                parent[neighbor] = current;
+                
+            }
+        }
+    }
+    auto stop = std::chrono::high_resolution_clock::now();  // Stop the timer
+    auto duration = std::chrono::duration_cast<std::chrono::microseconds>(stop - start);
+
+    if (!visited[target]) {
+        cout << "No path from source to target.\n";
+        return;
+    }
+
+   
+    cout << "Time taken by DFS: " << duration.count() << " microseconds" << endl;
+
+    
+    stack<int> path;
+    for (int v = target; v != -1; v = parent[v]) {
+        path.push(v);
+    }
+
+    cout << "Path: ";
+    while (!path.empty()) {
+        cout << path.top() << ' ';
+        path.pop();
+    }
+    cout << endl;
+    main();
 }
 
 
