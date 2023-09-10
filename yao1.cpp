@@ -36,8 +36,10 @@ Graph loadGraph(const std::string& filename) {
     }
     return graph;
 }
+
+
 // Function to display the path from start node to target node
-void displayPath(const std::unordered_map<int, int>& prev, int target) {
+void displayPath(const std::unordered_map<int, int>& prev, int target, const std::unordered_map<int, int>& distances) {
     std::stack<int> path;
     int node = target;
 
@@ -54,11 +56,11 @@ void displayPath(const std::unordered_map<int, int>& prev, int target) {
             std::cout << " -> ";
         }
     }
-    std::cout << std::endl;
+    std::cout << "\nTotal Distance: " << distances.at(target) << std::endl;
 }
 
 // Dijkstra's Algorithm
-std::unordered_map<int, int> uniformCostBestFirstSearch(const Graph& graph, int start, int goal) {
+std::pair<std::unordered_map<int, int>, std::unordered_map<int, int>> uniformCostBestFirstSearch(const Graph& graph, int start, int goal) {
     std::unordered_map<int, int> prev;
     std::unordered_map<int, int> distances;
 
@@ -88,22 +90,26 @@ std::unordered_map<int, int> uniformCostBestFirstSearch(const Graph& graph, int 
     for (const auto& pair : distances) {
         std::cout << "Distance to " << pair.first << " = " << pair.second << std::endl;
     }
-    return prev; // Return the predecessor map
+
+    return { prev, distances }; // Return the predecessor map
 }
 
 
 // BFS
-void breadthFirstSearch(const Graph& graph, std::unordered_map<int, int>& distances) {
+void breadthFirstSearch(const Graph& graph, int start, int target, std::unordered_map<int, int>& distances) {
     std::unordered_map<int, bool> visited;
+    std::unordered_map<int, int> prev;
+
     for (const auto& pair : graph) {
         visited[pair.first] = false;
         distances[pair.first] = INT_MAX; // Set initial distances to a very high value
+        prev[pair.first] = -1;  // Initialize with -1 to represent no predecessor
     }
 
     std::queue<int> q;
-    q.push(1);
-    distances[1] = 0;
-    
+    q.push(start);
+    distances[start] = 0;
+
     while (!q.empty()) {
         int current = q.front();
         q.pop();
@@ -113,26 +119,34 @@ void breadthFirstSearch(const Graph& graph, std::unordered_map<int, int>& distan
             visited[current] = true;
 
             for (const Node& neighbor : graph.at(current)) {
-                if (!visited[neighbor.vertex] && distances[neighbor.vertex] == INT_MAX) { // This check ensures we don't update distances for already explored paths
+                if (!visited[neighbor.vertex] && distances[neighbor.vertex] == INT_MAX) {
                     q.push(neighbor.vertex);
                     distances[neighbor.vertex] = distances[current] + neighbor.weight;
+                    prev[neighbor.vertex] = current; // Set the predecessor
                 }
             }
+
         }
     }
+
+    displayPath(prev, target, distances);  // Print the path from start to target
 }
 
+
 // DFS
-void depthFirstSearch(const Graph& graph, std::unordered_map<int, int>& distances) {
+void depthFirstSearch(const Graph& graph, int start, int target, std::unordered_map<int, int>& distances) {
     std::unordered_map<int, bool> visited;
+    std::unordered_map<int, int> prev;
+
     for (const auto& pair : graph) {
         visited[pair.first] = false;
-        distances[pair.first] = INT_MAX; // Set initial distances to a very high value
+        distances[pair.first] = INT_MAX;
+        prev[pair.first] = -1;
     }
 
     std::stack<int> s;
-    s.push(1);
-    distances[1] = 0;
+    s.push(start);
+    distances[start] = 0;
 
     while (!s.empty()) {
         int current = s.top();
@@ -145,32 +159,42 @@ void depthFirstSearch(const Graph& graph, std::unordered_map<int, int>& distance
             for (const Node& neighbor : graph.at(current)) {
                 if (!visited[neighbor.vertex]) {
                     s.push(neighbor.vertex);
-                    if (distances[neighbor.vertex] == INT_MAX) { // This check ensures we don't update distances for already explored paths
-                        distances[neighbor.vertex] = distances[current] + neighbor.weight;
-                    }
+                    // Simply update the distance and predecessor without any conditions
+                    distances[neighbor.vertex] = distances[current] + neighbor.weight;
+                    prev[neighbor.vertex] = current;
                 }
             }
         }
     }
+
+    displayPath(prev, target, distances);
 }
+
+
 
 int main() {
     int target = 0;
-    Graph graph = loadGraph("graphPosMes.txt");  // Example for 10-node graph
+    Graph graph = loadGraph("test.txt");  // Example for 10-node graph
     std::cout << "What is target: ";
     std::cin >> target;
 
     std::cout << "Dijkstra's Algorithm Results:" << std::endl;
-    std::unordered_map<int, int> prev = uniformCostBestFirstSearch(graph, 1, target); // Assuming 1 as the start node
-    displayPath(prev, target); // Now this should work
+    auto result = uniformCostBestFirstSearch(graph, 1, target);
+    displayPath(result.first, target, result.second);
 
     std::cout << "\nBFS Results:" << std::endl;
     std::unordered_map<int, int> bfsDistances;
-    breadthFirstSearch(graph, bfsDistances);
+    breadthFirstSearch(graph, 1, target, bfsDistances);
+    
+
+    
+
+
     std::cout << "\nDFS Results:" << std::endl;
     std::unordered_map<int, int> dfsDistances;
-    depthFirstSearch(graph, dfsDistances);
+    depthFirstSearch(graph, 1, target, dfsDistances);
+    
 
     return 0;
 }
-//I added tracking the specified node and displaying the path on the best search algorithm. I successfully run this code on the siue server
+//final vision for me 
